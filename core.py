@@ -42,15 +42,15 @@ def check_gateways():
 def get_transactions(headers, params):
     url = 'https://core.spreedly.com/v1/transactions.json'
     r = requests.get(url=url, headers=headers, params=params)
+    transactions = 'Transactions follow:\n'
     if r.ok:
         j = r.json()
-        transactions = 'Transactions follow:\n'
         for transaction in j['transactions']:
             transactions += str(transaction) + '\n'
-        return transactions
     else:
-        print("No transactions to retrieve.")
-        return ''
+        transactions += "No transactions to retrieve."
+
+    return transactions
 
 
 
