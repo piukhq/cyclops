@@ -1,0 +1,11 @@
+.gitignore
+*.pyc
+.idea
+aes
+*.ipynb
+.coverage
+media
+.env
+__pychache__
+.cache
+
