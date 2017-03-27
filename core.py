@@ -59,7 +59,7 @@ def send_email(text):
     """Send an email"""
     yag = yagmail.SMTP(user=settings.EMAIL_SOURCE_CONFIG[0], password=settings.EMAIL_SOURCE_CONFIG[1],
                        host=settings.EMAIL_SOURCE_CONFIG[2], port=settings.EMAIL_SOURCE_CONFIG[3],
-                       smtp_starttls=False, smtp_skip_login=True)
+                       smtp_starttls=True, smtp_skip_login=False)
 
     yag.send(settings.EMAIL_TARGETS[0], 'Spreedly gateway BREACHED!', text)
 

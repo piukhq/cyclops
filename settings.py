@@ -20,9 +20,10 @@ AUTH_KEY = env_var('CYCLOPS_AUTH_KEY', 'WWM3eG4zZ0RQNzNQUE9RTEVCMkJZcHYzMUVWOjRt
 
 EMAIL_SOURCE_CONFIG = [
     # user | password | host | port
-    env_var('EMAIL_USER', 'noreply@bink.com'), env_var('EMAIL_PASSWORD', 'Gibbon^egg^Change^^'),
-    env_var('EMAIL_HOST', 'mail.bink.com'), env_var('EMAIL_PORT', 587), # 'smtp.office365.com', 587,
+    env_var('EMAIL_USER', 'oe@bink.com'), env_var('EMAIL_PASSWORD', 'BINK*2016@HOME'),
+    # 'noreply@bink.com', 'Gibbon^egg^Change^^'),
+    env_var('EMAIL_HOST', 'smtp.office365.com'), env_var('EMAIL_PORT', 587),
 ]
 
-EMAIL_TARGETS = [env_var('EMAIL_TARGET', 'oe@bink.com, ml@bink.com, pb@bink.com'),]
+EMAIL_TARGETS = [env_var('EMAIL_TARGET', 'oe@bink.com'),]
 
