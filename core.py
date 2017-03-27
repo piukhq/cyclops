@@ -12,6 +12,7 @@ def check_gateways():
     r = requests.get(url=url, headers=headers, params=params)
 
     redacted_gateways = ''
+    total = 0
 
     if r.ok:
         gateways = r.json()['gateways']
@@ -25,9 +26,9 @@ def check_gateways():
                     if r.ok:
                         text = "Successfully redacted gateway {} with token {}.\n\n".format(count, g['token'])
                         t = r.json()
-                        # print(t['transaction'])
 
                         redacted_gateways += text + 'Redacted gateway transaction: ' + str(t['transaction']) + '\n'
+                        total += 1
                     else:
                         print("Failed to redact gateway {} with token {}".format(count, g['token']))
                 else:
@@ -37,7 +38,7 @@ def check_gateways():
     else:
         print("Invalid Spreedly request attempting to list gateways.\n")
 
-    return redacted_gateways
+    return redacted_gateways, total
 
 def get_transactions(headers, params):
     url = 'https://core.spreedly.com/v1/transactions.json'
@@ -63,9 +64,9 @@ def send_email(text):
     yag.send(settings.EMAIL_TARGETS[0], 'Spreedly gateway BREACHED!', text)
 
 if __name__ == '__main__':
-    redacted_gateways = check_gateways()
-    transactions = get_transactions(headers, params)
-    email_content = redacted_gateways + '\n' + transactions
-    print(email_content)
-    send_email(email_content)
+    redacted_gateways, total = check_gateways()
+    if total > 0:
+        transactions = get_transactions(headers, params)
+        email_content = redacted_gateways + '\n' + transactions
+        send_email(email_content)
 
