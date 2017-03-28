@@ -1,0 +1,2 @@
+#!/usr/bin/execlineb -P
+/usr/bin/python3 /usr/local/src/cyclops/core.py
