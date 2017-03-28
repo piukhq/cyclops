@@ -1,10 +1,14 @@
 complexity:
   script:
-    - xenon --max-average A --max-modules B --max-absolute B .
+  - xenon --max-average A --max-modules B --max-absolute B .
+  tags:
+  - docker
 
 flake8:
   script:
-    - flake8 *
+  - flake8 *
+  tags:
+  - docker
 
 deploy:
   image: hellobink/ansible
@@ -14,3 +18,5 @@ deploy:
   - cd /ansible && ansible-playbook playbooks/deploy/pythonproject.yml -e project=cyclops -e hosts=dev_web
   only:
   - master
+  tags:
+  - shell
