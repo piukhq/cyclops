@@ -3,8 +3,9 @@ import settings
 import yagmail
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
-               'Content-Type': 'application/json',}
-params = {'order': 'desc',}
+           'Content-Type': 'application/json', }
+params = {'order': 'desc', }
+
 
 def check_gateways():
     url = 'https://core.spreedly.com/v1/gateways.json'
@@ -40,6 +41,7 @@ def check_gateways():
 
     return redacted_gateways, total
 
+
 def get_transactions(headers, params):
     url = 'https://core.spreedly.com/v1/transactions.json'
     r = requests.get(url=url, headers=headers, params=params)
@@ -54,7 +56,6 @@ def get_transactions(headers, params):
     return transactions
 
 
-
 def send_email(text):
     """Send an email"""
     yag = yagmail.SMTP(user=settings.EMAIL_SOURCE_CONFIG[0], password=settings.EMAIL_SOURCE_CONFIG[1],
@@ -63,10 +64,11 @@ def send_email(text):
 
     yag.send(settings.EMAIL_TARGETS[0], 'Spreedly gateway BREACHED!', text)
 
+
 if __name__ == '__main__':
     redacted_gateways, total = check_gateways()
+    print(total)
     if total > 0:
         transactions = get_transactions(headers, params)
         email_content = redacted_gateways + '\n' + transactions
         send_email(email_content)
-
