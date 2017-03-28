@@ -1,6 +1,10 @@
 import requests
-import settings
 import yagmail
+from apscheduler.schedulers.blocking import BlockingScheduler
+import settings
+
+
+sched = BlockingScheduler()
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
            'Content-Type': 'application/json', }
@@ -30,13 +34,13 @@ def check_gateways():
 
                         redacted_gateways += text + 'Redacted gateway transaction: ' + str(t['transaction']) + '\n'
                         total += 1
-                    else:
+                    elif settings.DEBUG:
                         print("Failed to redact gateway {} with token {}".format(count, g['token']))
-                else:
-                    print("Gateway {} with token {} already redacted".format(count, g['token']))
-        else:
+                elif settings.DEBUG:
+                        print("Gateway {} with token {} already redacted".format(count, g['token']))
+        elif settings.DEBUG:
             print("No gateways defined.\n")
-    else:
+    elif settings.DEBUG:
         print("Invalid Spreedly request attempting to list gateways.\n")
 
     return redacted_gateways, total
@@ -65,10 +69,15 @@ def send_email(text):
     yag.send(settings.EMAIL_TARGETS[0], 'Spreedly gateway BREACHED!', text)
 
 
-if __name__ == '__main__':
+@sched.scheduled_job('interval', seconds=10)
+def check_for_breach():
     redacted_gateways, total = check_gateways()
-    print(total)
+
     if total > 0:
         transactions = get_transactions(headers, params)
         email_content = redacted_gateways + '\n' + transactions
         send_email(email_content)
+
+
+if __name__ == '__main__':
+    sched.start()
