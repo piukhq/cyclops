@@ -15,7 +15,7 @@ deploy:
   stage: deploy
   environment: dev
   script:
-  - cd /ansible && ansible-playbook playbooks/deploy/pythonproject.yml -e project=cyclops -e hosts=dev_web
+  - cd ~/ansible && ansible-playbook playbooks/deploy/pythonproject.yml -e project=cyclops -e hosts=dev_web
   only:
   - master
   tags:
