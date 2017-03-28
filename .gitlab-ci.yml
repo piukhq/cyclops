@@ -11,12 +11,13 @@ flake8:
   - docker
 
 deploy:
-  image: hellobink/ansible
   stage: deploy
-  environment: dev
+  environment: latest
   script:
-  - cd /ansible && ansible-playbook playbooks/deploy/pythonproject.yml -e project=cyclops -e hosts=dev_web
+    - docker build -t hellobink/cyclops:latest .
+    - docker login -u binkautomation -p epitome-generic-basilisk
+    - docker push hellobink/cyclops:latest
   only:
-  - master
+    - master
   tags:
-  - docker
+    - shell
