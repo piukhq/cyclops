@@ -19,4 +19,4 @@ deploy:
   only:
   - master
   tags:
-  - shell
+  - docker
