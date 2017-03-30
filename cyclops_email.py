@@ -1,5 +1,4 @@
 import smtplib
-import email.utils
 from email.mime.text import MIMEText
 import settings
 
@@ -13,7 +12,7 @@ def send_email(text):
 
     # Create the message
     msg = MIMEText(text)
-    msg['To'] = email.utils.formataddr(('Recipient', to_email))
+    msg['To'] = ", ".join(to_email)
     msg['From'] = username
     msg['Subject'] = 'Spreedly gateway BREACHED!'
 
@@ -30,6 +29,6 @@ def send_email(text):
             server.ehlo()  # re-identify ourselves over TLS connection
 
         server.login(username, password)
-        server.sendmail(settings.EMAIL_SOURCE_CONFIG[0], [to_email], msg.as_string())
+        server.sendmail(settings.EMAIL_SOURCE_CONFIG[0], to_email, msg.as_string())
     finally:
         server.quit()
