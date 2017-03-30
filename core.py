@@ -67,7 +67,8 @@ def check_for_breach():
     if total > 0:
         transactions = get_transactions(headers, params)
         email_content = redacted_gateways + '\n' + transactions
-        payment_card_notify("Spreedly gateway BREACHED!  Please check an email address from the distribution list for details.")
+        payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
+                            "from the distribution list for details.")
         send_email(email_content)
 
 
