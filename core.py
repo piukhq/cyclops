@@ -1,8 +1,8 @@
 import requests
-import yagmail
 from apscheduler.schedulers.blocking import BlockingScheduler
 import settings
-
+from cyclops_email import send_email
+from slack import payment_card_notify
 
 sched = BlockingScheduler()
 
@@ -60,15 +60,6 @@ def get_transactions(headers, params):
     return transactions
 
 
-def send_email(text):
-    """Send an email"""
-    yag = yagmail.SMTP(user=settings.EMAIL_SOURCE_CONFIG[0], password=settings.EMAIL_SOURCE_CONFIG[1],
-                       host=settings.EMAIL_SOURCE_CONFIG[2], port=settings.EMAIL_SOURCE_CONFIG[3],
-                       smtp_starttls=True, smtp_skip_login=False)
-
-    yag.send(settings.EMAIL_TARGETS[0], 'Spreedly gateway BREACHED!', text)
-
-
 @sched.scheduled_job('interval', seconds=10)
 def check_for_breach():
     redacted_gateways, total = check_gateways()
@@ -76,6 +67,7 @@ def check_for_breach():
     if total > 0:
         transactions = get_transactions(headers, params)
         email_content = redacted_gateways + '\n' + transactions
+        payment_card_notify("Spreedly gateway BREACHED!  Please check an email address from the distribution list for details.")
         send_email(email_content)
 
 
