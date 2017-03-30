@@ -27,7 +27,7 @@ def send_email(text):
         # If we can encrypt this session, do it
         if server.has_extn('STARTTLS'):
             server.starttls()
-            server.ehlo() # re-identify ourselves over TLS connection
+            server.ehlo()  # re-identify ourselves over TLS connection
 
         server.login(username, password)
         server.sendmail(settings.EMAIL_SOURCE_CONFIG[0], [to_email], msg.as_string())
