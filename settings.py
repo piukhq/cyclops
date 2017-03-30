@@ -14,11 +14,10 @@ AUTH_KEY = env_var('CYCLOPS_AUTH_KEY', 'MUxmN0RpS2drY3g1QW53N1F4V2REeGFLdFRhOjRt
 
 EMAIL_SOURCE_CONFIG = [
     # user | password | host | port
-    env_var('EMAIL_USER', 'oe@bink.com'), env_var('EMAIL_PASSWORD', 'BINK*2016@HOME'),
-    # 'noreply@bink.com', 'Gibbon^egg^Change^^'),
+    env_var('EMAIL_USER', 'itapps@bink.com'), env_var('EMAIL_PASSWORD', '$NickCisEcbeu1'),
     env_var('EMAIL_HOST', 'smtp.office365.com'), env_var('EMAIL_PORT', 587),
 ]
 
-EMAIL_TARGETS = env_var('EMAIL_TARGET', 'oe@bink.com, pb@bink.com, ml@bink.com', )
+EMAIL_TARGETS = env_var('EMAIL_TARGET', ['oe@bink.com', 'ml@bink.com', 'pb@bink.com', ], )
 
 SLACK_API_TOKEN = 'xoxb-119487439522-Lsefc6ykOx3RIXC89WN8wx3h'
