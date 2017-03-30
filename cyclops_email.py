@@ -1,5 +1,4 @@
 import smtplib
-import email.utils
 from email.mime.text import MIMEText
 import settings
 
