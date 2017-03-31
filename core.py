@@ -5,12 +5,14 @@ from cyclops_email import send_email
 from slack import payment_card_notify
 import arrow
 
+
 sched = BlockingScheduler()
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
            'Content-Type': 'application/json', }
 
 params = {'order': 'desc', }
+
 
 def redact_gateway(output_text, total, g):
     # get all transactions for this gateway based on it's token
