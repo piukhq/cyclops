@@ -3,13 +3,14 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import settings
 from cyclops_email import send_email
 from slack import payment_card_notify
+import arrow
 
 sched = BlockingScheduler()
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
            'Content-Type': 'application/json', }
-params = {'order': 'desc', }
 
+params = {'order': 'desc', }
 
 def redact_gateway(output_text, total, g):
     # get all transactions for this gateway based on it's token
@@ -37,24 +38,49 @@ def redact_gateway(output_text, total, g):
     return output_text, total
 
 
+def handle_redactions(gateways, output_text, total):
+    token = ''
+    if len(gateways) > 0:
+        for count, g in enumerate(gateways):
+            if not g['redacted']:
+                include_output_in_email = False
+                ca = g['created_at']  # Format looks like: 2017-03-16T18:14:11Z
+                timestamp = arrow.get(int(ca[:4]), int(ca[5:7]), int(ca[8:10]),
+                                      int(ca[11:13]), int(ca[14:16]), int(ca[17:19]))
+                now_minus_two_mins = arrow.utcnow().replace(minutes=-2)
+                if timestamp > now_minus_two_mins:
+                    include_output_in_email = True
+                output, total = redact_gateway(output_text, total, g)
+                if include_output_in_email:
+                    output_text = output
+            elif settings.DEBUG:
+                print("Gateway with token {} already redacted".format(g['token']))
+            token = g['token']
+    elif settings.DEBUG:
+        print("No gateways defined.\n")
+
+    return output_text, total, token
+
+
 def check_gateways():
     url = 'https://core.spreedly.com/v1/gateways.json'
+    list_gateways_params = {'order': 'desc', }
 
-    r = requests.get(url=url, headers=headers, params=params)
+    r = requests.get(url=url, headers=headers, params=list_gateways_params)
 
     total = 0
     output_text = ''
 
     if r.ok:
         gateways = r.json()['gateways']
-        if len(gateways) > 0:
-            for count, g in enumerate(gateways):
-                if not g['redacted']:
-                    output_text, total = redact_gateway(output_text, total, g)
-                elif settings.DEBUG:
-                    print("Gateway with token {} already redacted".format(g['token']))
-        elif settings.DEBUG:
-            print("No gateways defined.\n")
+        output_text, total, token = handle_redactions(gateways, output_text, total)
+        while len(gateways) == 20:
+            list_gateways_params['since_token'] = token
+            r = requests.get(url=url, headers=headers, params=list_gateways_params)
+            if r.ok:
+                gateways = r.json()['gateways']
+                output_text, total, token = handle_redactions(gateways, output_text, total)
+
     elif settings.DEBUG:
         print("Invalid Spreedly request attempting to list gateways.\n")
 
@@ -93,7 +119,7 @@ def get_transactions(headers, params):
 def check_for_breach():
     email_text, total = check_gateways()
 
-    if total > 0:
+    if total > 0 and len(email_text):
         payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
                             "from the cyclops distribution list for details.")
         send_email(email_text)
