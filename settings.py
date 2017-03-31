@@ -18,6 +18,6 @@ EMAIL_SOURCE_CONFIG = [
     env_var('EMAIL_HOST', 'smtp.office365.com'), env_var('EMAIL_PORT', 587),
 ]
 
-EMAIL_TARGETS = env_var('EMAIL_TARGET', ['oe@bink.com', 'ml@bink.com', 'pb@bink.com', ], )
+EMAIL_TARGETS = env_var('EMAIL_TARGET', ['oe@bink.com', 'dg@bink.com', 'ml@bink.com', 'pb@bink.com', ], )
 
 SLACK_API_TOKEN = 'xoxb-119487439522-Lsefc6ykOx3RIXC89WN8wx3h'
