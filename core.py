@@ -11,44 +11,47 @@ headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
 params = {'order': 'desc', }
 
 
+def redact_gateway(output_text, total):
+    # get all transactions for this gateway based on it's token
+    transactions = get_gateway_transactions(headers, params, g['token'])
+
+    # unprovision the gateway
+    url = 'https://core.spreedly.com/v1/gateways/{}/redact.json'.format(g['token'])
+    r = requests.put(url=url, headers=headers)
+    if r.ok:
+        text = "Successfully redacted gateway with token {}.\n\n".format(g['token'])
+        t = r.json()
+
+        redacted_gateways = text + 'Redacted gateway transaction: ' + str(t['transaction']) + '\n\n'
+        total += 1
+
+        output_text += redacted_gateways
+        if len(transactions):
+            output_text += 'Transactions: (paginated, most recent first)' \
+                           '...\n\n' + transactions
+        else:
+            output_text += 'No transactions occurred with this gateway.\n\n'
+    elif settings.DEBUG:
+        print("Failed to redact gateway with token {}".format(g['token']))
+
+    return output_text, total
+
+
 def check_gateways():
     url = 'https://core.spreedly.com/v1/gateways.json'
 
     r = requests.get(url=url, headers=headers, params=params)
 
-    redacted_gateways = ''
     total = 0
     output_text = ''
 
     if r.ok:
         gateways = r.json()['gateways']
         if len(gateways) > 0:
-
             for count, g in enumerate(gateways):
                 transactions = ''
                 if not g['redacted']:
-
-                    # get all transactions for this gateway based on it's token
-                    transactions = get_gateway_transactions(headers, params, g['token'])
-
-                    # unprovision the gateway
-                    url = 'https://core.spreedly.com/v1/gateways/{}/redact.json'.format(g['token'])
-                    r = requests.put(url=url, headers=headers)
-                    if r.ok:
-                        text = "Successfully redacted gateway with token {}.\n\n".format(g['token'])
-                        t = r.json()
-
-                        redacted_gateways = text + 'Redacted gateway transaction: ' + str(t['transaction']) + '\n\n'
-                        total += 1
-
-                        output_text += redacted_gateways
-                        if len(transactions):
-                            output_text += 'Transactions: (paginated, most recent first)' \
-                                           '...\n\n' + transactions
-                        else:
-                            output_text += 'No transactions occurred with this gateway.\n\n'
-                    elif settings.DEBUG:
-                        print("Failed to redact gateway with token {}".format(g['token']))
+                    output_text, total = redact_gateway(output_text, total)
                 elif settings.DEBUG:
                     print("Gateway with token {} already redacted".format(g['token']))
         elif settings.DEBUG:
