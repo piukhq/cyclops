@@ -92,8 +92,8 @@ def check_for_breach():
     email_text, total = check_gateways()
 
     if total > 0:
-        #payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
-        #                    "from the cyclops distribution list for details.")
+        payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
+                            "from the cyclops distribution list for details.")
         send_email(email_text)
 
 
