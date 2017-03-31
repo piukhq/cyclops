@@ -11,7 +11,7 @@ headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
 params = {'order': 'desc', }
 
 
-def redact_gateway(output_text, total):
+def redact_gateway(output_text, total, g):
     # get all transactions for this gateway based on it's token
     transactions = get_gateway_transactions(headers, params, g['token'])
 
@@ -49,9 +49,8 @@ def check_gateways():
         gateways = r.json()['gateways']
         if len(gateways) > 0:
             for count, g in enumerate(gateways):
-                transactions = ''
                 if not g['redacted']:
-                    output_text, total = redact_gateway(output_text, total)
+                    output_text, total = redact_gateway(output_text, total, g)
                 elif settings.DEBUG:
                     print("Gateway with token {} already redacted".format(g['token']))
         elif settings.DEBUG:
