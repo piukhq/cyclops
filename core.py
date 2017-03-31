@@ -46,9 +46,7 @@ def handle_redactions(gateways, output_text, total):
         for count, g in enumerate(gateways):
             if not g['redacted']:
                 include_output_in_email = False
-                ca = g['created_at']  # Format looks like: 2017-03-16T18:14:11Z
-                timestamp = arrow.get(int(ca[:4]), int(ca[5:7]), int(ca[8:10]),
-                                      int(ca[11:13]), int(ca[14:16]), int(ca[17:19]))
+                timestamp = arrow.get(g['created_at'])
                 now_minus_two_mins = arrow.utcnow().replace(minutes=-2)
                 if timestamp > now_minus_two_mins:
                     include_output_in_email = True
