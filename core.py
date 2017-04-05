@@ -6,7 +6,12 @@ from slack import payment_card_notify
 import arrow
 
 
-sched = BlockingScheduler()
+job_defaults = {
+    'coalesce': False,
+    'max_instances': 5
+}
+
+sched = BlockingScheduler(job_defaults=job_defaults)
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
            'Content-Type': 'application/json', }
@@ -117,13 +122,20 @@ def get_transactions(headers, params):
 
 @sched.scheduled_job('interval', seconds=10)
 def check_for_breach():
-    email_text, total = check_gateways()
 
-    if total > 0 and len(email_text):
-        payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
-                            "from the cyclops distribution list for details.")
-        send_email(email_text)
+    try:
+        email_text, total = check_gateways()
+
+        if total > 0 and len(email_text):
+            payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
+                                "from the cyclops distribution list for details.")
+            send_email(email_text)
+    except Exception as e:
+        #  Unknown issue
+        print("Exception occurred in check_for_breach(): {}.".format(str(e)))
 
 
 if __name__ == '__main__':
-    sched.start()
+    while True:
+        sched.start()
+        print("The blocking scheduler returned so we're going to launch it again...")
