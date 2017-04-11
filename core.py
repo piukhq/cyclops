@@ -2,7 +2,8 @@ import requests
 from cyclops_email import send_email
 from slack import payment_card_notify
 import arrow
-import sched, time
+import sched
+import time
 import threading
 import settings
 
@@ -116,8 +117,10 @@ def get_transactions(headers, params):
 
     return transactions
 
+
 start = stop = current = arrow.utcnow()
 complete = False
+
 
 def check_for_breach(sc):
     global sEv
