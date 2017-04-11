@@ -7,7 +7,7 @@ read_env()
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = env_var('CYCLOPS_DEBUG', True)
+DEBUG = env_var('CYCLOPS_DEBUG', False)
 
 # This AUTH_KEY is the interpreted key based on the ACCESS_SECRET and KEY above
 AUTH_KEY = env_var('CYCLOPS_AUTH_KEY', 'MUxmN0RpS2drY3g1QW53N1F4V2REeGFLdFRhOjRtOHRWS1dIdmFramhmQlhuUlZEYm'
