@@ -1,5 +1,6 @@
 from environment import env_var, read_env
 import os
+from raven import Client
 
 
 read_env()
@@ -21,3 +22,9 @@ EMAIL_SOURCE_CONFIG = [
 EMAIL_TARGETS = env_var('EMAIL_TARGET', ['oe@bink.com', 'dg@bink.com', 'ml@bink.com', 'pb@bink.com', ], )
 
 SLACK_API_TOKEN = 'xoxb-119487439522-Lsefc6ykOx3RIXC89WN8wx3h'
+
+SENTRY_DSN = env_var("CYCLOPS_SENTRY_DSN")
+
+sentry = Client(SENTRY_DSN)
+
+BREACH_CHECK_PERIOD = 10

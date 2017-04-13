@@ -1,17 +1,15 @@
 import requests
-from apscheduler.schedulers.blocking import BlockingScheduler
-import settings
 from cyclops_email import send_email
 from slack import payment_card_notify
 import arrow
+import sched
+import time
+import threading
+import settings
 
 
-job_defaults = {
-    'coalesce': False,
-    'max_instances': 5
-}
-
-sched = BlockingScheduler(job_defaults=job_defaults)
+lock = threading.Lock()
+s = sched.scheduler(time.time, time.sleep)
 
 headers = {'Authorization': 'Basic {}'.format(settings.AUTH_KEY),
            'Content-Type': 'application/json', }
@@ -120,22 +118,75 @@ def get_transactions(headers, params):
     return transactions
 
 
-@sched.scheduled_job('interval', seconds=10)
-def check_for_breach():
+start = stop = current = arrow.utcnow()
+complete = False
 
+
+def check_for_breach(sc):
+    global sEv
+    global complete
+    global start
+    global stop
+    global current
+    start = stop = current = arrow.utcnow().datetime
+    complete = False
     try:
         email_text, total = check_gateways()
-
         if total > 0 and len(email_text):
+            if settings.DEBUG:
+                print("FOUND a gateway breach!")
             payment_card_notify("Spreedly gateway BREACHED!  Please check an email address "
                                 "from the cyclops distribution list for details.")
             send_email(email_text)
     except Exception as e:
         #  Unknown issue
         print("Exception occurred in check_for_breach(): {}.".format(str(e)))
+    finally:
+        print("Scheduling next check_for_breach() run...")
+        sEv = sc.enter(settings.BREACH_CHECK_PERIOD, 1, check_for_breach, (sc,))
+        complete = True
+        stop = arrow.utcnow().datetime
+
+
+sEv = s.enter(settings.BREACH_CHECK_PERIOD, 1, check_for_breach, (s,))
+
+
+def general_timer(ev):
+    global start
+    global stop
+    global current
+    global complete
+    current = arrow.utcnow().datetime
+
+    with lock:
+        if not complete:
+            time_difference = (current - start).seconds
+            if settings.DEBUG:
+                print("Time difference for job is currently: {}".format(time_difference))
+        else:
+            print("Actual time difference (seconds): {}".format((stop - start).seconds))
+            time_difference = 0
+
+    if time_difference > settings.BREACH_CHECK_PERIOD:
+        print("check_for_breach job took longer than {} secs, "
+              "cancelling and rescheduling...".format(settings.BREACH_CHECK_PERIOD))
+        try:
+            for q_event in s.queue:
+                s.cancel(q_event)
+                if settings.DEBUG:
+                    print("check_for_breach timer thread cancelled.")
+            sEv = s.enter(settings.BREACH_CHECK_PERIOD, 1, check_for_breach, (s,))
+            threading.Timer(2, general_timer, [sEv, ]).start()
+            s.run()
+        except ValueError as e:
+            if settings.DEBUG:
+                print("Exception handling cancellation of check_for_breach timer thread: {}".format(str(e)))
+    elif settings.DEBUG:
+        print("Everything is fine, continuing...")
+    threading.Timer(2, general_timer, [ev, ]).start()
 
 
 if __name__ == '__main__':
-    while True:
-        sched.start()
-        print("The blocking scheduler returned so we're going to launch it again...")
+    threading.Thread(target=general_timer, args=(sEv,)).start()
+    start = arrow.utcnow().datetime
+    s.run()
