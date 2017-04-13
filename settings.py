@@ -13,6 +13,8 @@ DEBUG = env_var('CYCLOPS_DEBUG', False)
 AUTH_KEY = env_var('CYCLOPS_AUTH_KEY', 'MUxmN0RpS2drY3g1QW53N1F4V2REeGFLdFRhOjRtOHRWS1dIdmFramhmQlhuUlZEYm'
                                        'ZrT0FyQjlOdkF5bzlVNmxXdFZ1bGIydGh1STZUNDM5YmxSYlFXR3dRY0g=')
 
+SPREEDLY_ENV_KEY = '1Lf7DiKgkcx5Anw7QxWdDxaKtTa'
+
 EMAIL_SOURCE_CONFIG = [
     # user | password | host | port
     env_var('EMAIL_USER', 'itapps@bink.com'), env_var('EMAIL_PASSWORD', '$NickCisEcbeu1'),
