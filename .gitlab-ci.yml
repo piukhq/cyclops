@@ -12,12 +12,15 @@ flake8:
 
 deploy:
   stage: deploy
-  environment: latest
   script:
-    - docker build -t hellobink/cyclops:latest .
-    - docker login -u binkautomation -p epitome-generic-basilisk
-    - docker push hellobink/cyclops:latest
+    - docker build -t registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID -t registry.gitlab.com/hellobink/olympus/cyclops/image:latest .
+    - docker login registry.gitlab.com -u binkautomation -p $REPO_PASS
+    - docker push registry.gitlab.com/hellobink/olympus/cyclops/image:latest
+    - docker push registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID
+    - docker rmi registry.gitlab.com/hellobink/olympus/cyclops/image:latest
+    - docker rmi registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID
   only:
     - master
   tags:
     - shell
+
