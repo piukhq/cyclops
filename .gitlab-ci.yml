@@ -1,3 +1,10 @@
+tests:
+  script:
+    - pip3 install -r requirements.txt
+    - py.test cyclops/tests --cov=cyclops
+  tags:
+    - docker
+
 complexity:
   script:
   - xenon --max-average A --max-modules B --max-absolute B .
