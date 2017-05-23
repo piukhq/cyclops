@@ -3,4 +3,4 @@ slackclient==1.0.4
 arrow==0.8.0
 graypy==0.2.14
 raven==5.10.2
-
+responses==0.5.1

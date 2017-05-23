@@ -1,5 +1,6 @@
 from slackclient import SlackClient
-from settings import SLACK_API_TOKEN
+
+from cyclops.settings import SLACK_API_TOKEN
 
 
 client = SlackClient(SLACK_API_TOKEN)

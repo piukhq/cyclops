@@ -1,14 +1,15 @@
-import smtplib
 from email.mime.text import MIMEText
-import settings
+import smtplib
+
+from cyclops import settings
 
 
 def send_email(text):
     to_email = settings.EMAIL_TARGETS
-    servername = settings.EMAIL_SOURCE_CONFIG[2]
-    username = settings.EMAIL_SOURCE_CONFIG[0]
-    password = settings.EMAIL_SOURCE_CONFIG[1]
-    port = settings.EMAIL_SOURCE_CONFIG[3]
+    servername = settings.EMAIL_HOST
+    username = settings.EMAIL_USERNAME
+    password = settings.EMAIL_PASSWORD
+    port = settings.EMAIL_PORT
 
     # Create the message
     msg = MIMEText(text)
@@ -29,6 +30,6 @@ def send_email(text):
             server.ehlo()  # re-identify ourselves over TLS connection
 
         server.login(username, password)
-        server.sendmail(settings.EMAIL_SOURCE_CONFIG[0], to_email, msg.as_string())
+        server.sendmail(username, to_email, msg.as_string())
     finally:
         server.quit()
