@@ -17,7 +17,7 @@ EMAIL_TARGETS = ['development@bink.com']
 SLACK_API_TOKEN = 'xoxb-119487439522-Lsefc6ykOx3RIXC89WN8wx3h'
 
 SENTRY_DSN = env_var('CYCLOPS_SENTRY_DSN',
-                     ('https://ac61a7968c43427c90542ffff74d5f1f:6d26fffe2d9c4c79bd28204899229d6f'
+                     ('http://ac61a7968c43427c90542ffff74d5f1f:6d26fffe2d9c4c79bd28204899229d6f'
                       '@sentry.loyaltyangels.com:8999/17'))
 
 HEALTHCHECK_URL = env_var('HEALTHCHECK_URL', 'https://hchk.io/92429b19-1ea5-4f45-8abf-ee93c943ac39')
