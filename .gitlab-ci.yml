@@ -1,4 +1,9 @@
+stages:
+  - tests
+  - build
+
 tests:
+  stage: tests
   script:
     - pip3 install -r requirements.txt
     - py.test cyclops/tests --cov=cyclops
@@ -6,28 +11,30 @@ tests:
     - docker
 
 complexity:
+  stage: tests
   script:
   - xenon --max-average A --max-modules B --max-absolute B .
   tags:
   - docker
 
 flake8:
+  stage: tests
   script:
   - flake8 *
   tags:
   - docker
 
-deploy:
-  stage: deploy
+build-master:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - docker build -t registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID -t registry.gitlab.com/hellobink/olympus/cyclops/image:latest .
-    - docker login registry.gitlab.com -u binkautomation -p $REPO_PASS
-    - docker push registry.gitlab.com/hellobink/olympus/cyclops/image:latest
-    - docker push registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID
-    - docker rmi registry.gitlab.com/hellobink/olympus/cyclops/image:latest
-    - docker rmi registry.gitlab.com/hellobink/olympus/cyclops/image:build-$CI_PIPELINE_ID
+    - docker build --pull -t "$CI_REGISTRY/cyclops:latest" .
+    - docker push "$CI_REGISTRY/cyclops:latest"
   only:
     - master
   tags:
-    - shell
-
+    - docker
