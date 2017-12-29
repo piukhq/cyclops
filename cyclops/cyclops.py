@@ -88,7 +88,7 @@ def notify(gateways, responses):
                 transaction_message = repr(transactions)
             else:
                 transaction_message = 'No transactions to retrieve.'
-        except:
+        except Exception:
             transaction_message = 'Failed to retrieve transactions.'
 
         lines = ('Successfully redacted gateway with token {}.'.format(gateway['token']),
