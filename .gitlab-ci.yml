@@ -1,6 +1,7 @@
 stages:
   - tests
   - build
+  - deploy
 
 tests:
   stage: tests
@@ -24,7 +25,7 @@ flake8:
   tags:
   - docker
 
-build-master:
+build:
   stage: build
   image: docker:latest
   services:
@@ -36,5 +37,12 @@ build-master:
     - docker push "$CI_REGISTRY/cyclops:latest"
   only:
     - master
-  tags:
-    - docker
+
+deploy:
+  stage: deploy
+  image: binkops.azurecr.io/kubedeployer:latest
+  script:
+    - kubectl config use-context prod
+    - kubectl delete po $(kubectl get --no-headers=true -l run=cyclops -o custom-columns=:metadata.name)
+  only:
+    - master
