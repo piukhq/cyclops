@@ -43,6 +43,6 @@ deploy:
   image: binkops.azurecr.io/kubedeployer:latest
   script:
     - kubectl config use-context prod
-    - kubectl delete po $(kubectl get --no-headers=true -l run=cyclops -o custom-columns=:metadata.name)
+    - kubectl delete po $(kubectl get po --no-headers=true -l run=cyclops -o custom-columns=:metadata.name)
   only:
     - master
