@@ -41,6 +41,7 @@ build:
 deploy:
   stage: deploy
   image: binkops.azurecr.io/kubedeployer:latest
+  environment: prod
   script:
     - kubectl config use-context prod
     - kubectl delete po $(kubectl get po --no-headers=true -l run=cyclops -o custom-columns=:metadata.name)
