@@ -12,7 +12,7 @@ if __name__ == '__main__':
         while True:
             try:
                 check()
-            except Exception as e:
+            except Exception:
                 sentry.captureException()
             finally:
                 time.sleep(60)

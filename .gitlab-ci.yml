@@ -8,22 +8,16 @@ tests:
   script:
     - pip3 install -r requirements.txt
     - py.test cyclops/tests --cov=cyclops
-  tags:
-    - docker
 
 complexity:
   stage: tests
   script:
   - xenon --max-average A --max-modules B --max-absolute B .
-  tags:
-  - docker
 
 flake8:
   stage: tests
   script:
   - flake8 *
-  tags:
-  - docker
 
 build:
   stage: build
@@ -35,15 +29,5 @@ build:
   script:
     - docker build --pull -t "$CI_REGISTRY/cyclops:latest" .
     - docker push "$CI_REGISTRY/cyclops:latest"
-  only:
-    - master
-
-deploy:
-  stage: deploy
-  image: binkops.azurecr.io/kubedeployer:latest
-  environment: prod
-  script:
-    - kubectl config use-context prod
-    - kubectl delete po $(kubectl get po --no-headers=true -l run=cyclops -o custom-columns=:metadata.name)
   only:
     - master
