@@ -9,7 +9,7 @@ from cyclops.cyclops import redact, notify, get_gateways
 
 def add_redact_route():
     responses.add(responses.PUT,
-                  re.compile('https://core.spreedly.com/v1/gateways/.*/redact\.json'),
+                  re.compile('https://core.spreedly.com/v1/gateways/.*/redact\\.json'),
                   body=b'{"status": "redact works"}',
                   status=200,
                   content_type='application/json')
@@ -17,7 +17,7 @@ def add_redact_route():
 
 def add_transactions_route():
     responses.add(responses.GET,
-                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\.json'),
+                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\\.json'),
                   body=b'{"transactions": [{"status": "transactions work"}]}',
                   status=200,
                   content_type='application/json')
@@ -25,7 +25,7 @@ def add_transactions_route():
 
 def add_transactions_empty_route():
     responses.add(responses.GET,
-                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\.json'),
+                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\\.json'),
                   body=b'{"transactions": []}',
                   status=200,
                   content_type='application/json')
@@ -33,7 +33,7 @@ def add_transactions_empty_route():
 
 def add_transactions_bad_request_route():
     responses.add(responses.GET,
-                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\.json'),
+                  re.compile('https://core.spreedly.com/v1/gateways/.*/transactions\\.json'),
                   body=b'{"status": "failure"}',
                   status=400,
                   content_type='application/json')
