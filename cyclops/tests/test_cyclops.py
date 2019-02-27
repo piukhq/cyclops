@@ -76,7 +76,7 @@ class TestCyclops(TestCase):
         notify([{"token": "test"}], [mock_response])
 
         mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to development@bink.com"
+            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
         )
 
         mock_send_email.assert_called_once_with(
@@ -98,7 +98,7 @@ class TestCyclops(TestCase):
         notify([{"token": "test"}], [mock_response])
 
         mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to development@bink.com"
+            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
         )
 
         mock_send_email.assert_called_once_with(
@@ -120,7 +120,7 @@ class TestCyclops(TestCase):
         notify([{"token": "test"}], [mock_response])
 
         mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to development@bink.com"
+            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
         )
 
         mock_send_email.assert_called_once_with(
