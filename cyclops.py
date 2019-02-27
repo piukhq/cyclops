@@ -1,11 +1,8 @@
 import time
 
-from raven import Client
+import sentry_sdk
 
 from cyclops.cyclops import check
-import settings
-
-sentry = Client(settings.SENTRY_DSN)
 
 if __name__ == "__main__":
     try:
@@ -13,7 +10,7 @@ if __name__ == "__main__":
             try:
                 check()
             except Exception:
-                sentry.captureException()
+                sentry_sdk.capture_exception()
             finally:
                 time.sleep(60)
     except KeyboardInterrupt:
