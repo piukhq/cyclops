@@ -3,11 +3,11 @@ import time
 from raven import Client
 
 from cyclops.cyclops import check
-from cyclops import settings
+import settings
 
 sentry = Client(settings.SENTRY_DSN)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         while True:
             try:

@@ -6,8 +6,8 @@ stages:
 tests:
   stage: tests
   script:
-    - pip3 install -r requirements.txt
-    - py.test cyclops/tests --cov=cyclops
+    - pipenv install --system --deploy --ignore-pipfile
+    - pytest cyclops/tests --cov=cyclops
 
 complexity:
   stage: tests

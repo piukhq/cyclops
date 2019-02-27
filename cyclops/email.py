@@ -1,7 +1,7 @@
 from email.mime.text import MIMEText
 import smtplib
 
-from cyclops import settings
+import settings
 
 
 def send_email(text):
@@ -9,13 +9,13 @@ def send_email(text):
     servername = settings.EMAIL_HOST
     username = settings.EMAIL_USERNAME
     password = settings.EMAIL_PASSWORD
-    port = settings.EMAIL_PORT
+    port = int(settings.EMAIL_PORT)
 
     # Create the message
     msg = MIMEText(text)
-    msg['To'] = ", ".join(to_email)
-    msg['From'] = username
-    msg['Subject'] = 'Spreedly gateway BREACHED!'
+    msg["To"] = ", ".join(to_email)
+    msg["From"] = username
+    msg["Subject"] = "Spreedly gateway BREACHED!"
 
     server = smtplib.SMTP(host=servername, port=port)
     try:
@@ -25,7 +25,7 @@ def send_email(text):
         server.ehlo()
 
         # If we can encrypt this session, do it
-        if server.has_extn('STARTTLS'):
+        if server.has_extn("STARTTLS"):
             server.starttls()
             server.ehlo()  # re-identify ourselves over TLS connection
 
