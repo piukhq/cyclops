@@ -13,6 +13,8 @@ logging.basicConfig(level=logging.INFO)
 
 SPREEDLY_PAGE_SIZE = 20
 
+TOKEN_WHITELIST = ["D5lARug9NzuUfrFNkbeiWYSdHtx"]
+
 
 def spreedly_endpoint(endpoint):
     return f"{settings.SPREEDLY_BASE_URL}{endpoint}"
@@ -125,5 +127,8 @@ def check():
     non_redacted_gateways = [
         g for g in get_all_gateways() if not g["redacted"]
     ]
-    if non_redacted_gateways:
-        redact_and_notify(non_redacted_gateways)
+    non_whitelisted_gateways = [
+        g for g in non_redacted_gateways if g["token"] not in TOKEN_WHITELIST
+    ]
+    if non_whitelisted_gateways:
+        redact_and_notify(non_whitelisted_gateways)
