@@ -13,7 +13,7 @@ EMAIL_PASSWORD = env_var("EMAIL_PASSWORD")
 EMAIL_HOST = env_var("EMAIL_HOST")
 EMAIL_PORT = env_var("EMAIL_PORT")
 
-EMAIL_TARGETS = ["development@bink.com"]
+EMAIL_TARGETS = ["cyclops@bink.com"]
 
 SLACK_API_TOKEN = env_var("SLACK_API_TOKEN")
 
