@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 SPREEDLY_PAGE_SIZE = 20
 
-TOKEN_WHITELIST = ["D5lARug9NzuUfrFNkbeiWYSdHtx"]
+TOKEN_WHITELIST = ["D5lARug9NzuUfrFNkbeiWYSdHtx", "VPpRZZjoblgGz46HJrPFA6UUye6"]
 
 
 def spreedly_endpoint(endpoint):
