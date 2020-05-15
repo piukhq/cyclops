@@ -37,7 +37,7 @@ def get_gateways(since_token=None):
 def get_all_gateways():
     gateways = get_gateways()
     while True:
-        if arrow.get(gateways[-1]["created_at"]) < arrow.now().replace(
+        if arrow.get(gateways[-1]["created_at"]) < arrow.now().shift(
             days=-7
         ):
             break
