@@ -65,9 +65,8 @@ class TestCyclops(TestCase):
         self.assertEqual(responses[0].json()["status"], "redact works")
 
     @responses.activate
-    @patch("cyclops.cyclops.send_email")
-    @patch("cyclops.cyclops.payment_card_notify")
-    def test_notify(self, mock_payment_card_notify, mock_send_email):
+    @patch("cyclops.cyclops.alert")
+    def test_notify(self, mock_alert):
         add_transactions_route()
 
         mock_response = MagicMock()
@@ -75,11 +74,7 @@ class TestCyclops(TestCase):
 
         notify([{"token": "test"}], [mock_response])
 
-        mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
-        )
-
-        mock_send_email.assert_called_once_with(
+        mock_alert.assert_called_once_with(
             "Successfully redacted gateway with token test.\n\nRedacted gateway "
             "transaction: {'status': 'transactions work'}\n\nTransactions: "
             "(paginated, most recent first)...\n\nTransactions for gateway with "
@@ -87,9 +82,8 @@ class TestCyclops(TestCase):
         )
 
     @responses.activate
-    @patch("cyclops.cyclops.send_email")
-    @patch("cyclops.cyclops.payment_card_notify")
-    def test_notify_empty_transactions(self, mock_payment_card_notify, mock_send_email):
+    @patch("cyclops.cyclops.alert")
+    def test_notify_empty_transactions(self, mock_alert):
         add_transactions_empty_route()
 
         mock_response = MagicMock()
@@ -97,11 +91,7 @@ class TestCyclops(TestCase):
 
         notify([{"token": "test"}], [mock_response])
 
-        mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
-        )
-
-        mock_send_email.assert_called_once_with(
+        mock_alert.assert_called_once_with(
             "Successfully redacted gateway with token test.\n\nRedacted gateway "
             "transaction: {'status': 'transactions work'}\n\nTransactions: "
             "(paginated, most recent first)...\n\nTransactions for gateway with "
@@ -109,9 +99,8 @@ class TestCyclops(TestCase):
         )
 
     @responses.activate
-    @patch("cyclops.cyclops.send_email")
-    @patch("cyclops.cyclops.payment_card_notify")
-    def test_notify_bad_request(self, mock_payment_card_notify, mock_send_email):
+    @patch("cyclops.cyclops.alert")
+    def test_notify_bad_request(self, mock_alert):
         add_transactions_bad_request_route()
 
         mock_response = MagicMock()
@@ -119,11 +108,7 @@ class TestCyclops(TestCase):
 
         notify([{"token": "test"}], [mock_response])
 
-        mock_payment_card_notify.assert_called_once_with(
-            "Spreedly gateway BREACHED! An email has been sent to cyclops@bink.com"
-        )
-
-        mock_send_email.assert_called_once_with(
+        mock_alert.assert_called_once_with(
             "Successfully redacted gateway with token test.\n\nRedacted gateway "
             "transaction: {'status': 'transactions work'}\n\nTransactions: "
             "(paginated, most recent first)...\n\nTransactions for gateway with "

@@ -4,8 +4,7 @@ import time
 import requests
 import arrow
 
-from cyclops.slack import payment_card_notify
-from cyclops.email import send_email
+from cyclops.alert import alert
 import settings
 
 
@@ -84,7 +83,7 @@ def notify(gateways, responses):
             f"/v1/gateways/{gateway['token']}/transactions.json"
         )
         headers = {
-            f"Authorization": "Basic {settings.AUTH_KEY}",
+            "Authorization": f"Basic {settings.AUTH_KEY}",
             "Content-Type": "application/json",
         }
         resp = requests.get(url=url, headers=headers, params={"order": "desc"})
@@ -111,10 +110,7 @@ def notify(gateways, responses):
         )
 
         message_parts.append("\n".join(lines))
-    send_email("\n\n---\n\n".join(message_parts))
-    payment_card_notify(
-        f"Spreedly gateway BREACHED! An email has been sent to {', '.join(settings.EMAIL_TARGETS)}"
-    )
+    alert("\n\n---\n\n".join(message_parts))
 
 
 def redact_and_notify(gateways):
