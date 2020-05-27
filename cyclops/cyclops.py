@@ -1,9 +1,9 @@
 import logging
 import time
 
-import requests
 import arrow
 
+from cyclops.requests_retry import requests_retry_session
 from cyclops.alert import alert
 import settings
 
@@ -20,6 +20,7 @@ def spreedly_endpoint(endpoint):
 
 
 def get_gateways(since_token=None):
+    session = requests_retry_session()
     url = spreedly_endpoint("/v1/gateways.json")
     headers = {
         "Authorization": f"Basic {settings.AUTH_KEY}",
@@ -29,7 +30,7 @@ def get_gateways(since_token=None):
     if since_token:
         params["since_token"] = since_token
 
-    resp = requests.get(url=url, headers=headers, params=params)
+    resp = session.get(url=url, headers=headers, params=params)
     resp.raise_for_status()
     return resp.json()["gateways"]
 
@@ -52,6 +53,7 @@ def get_all_gateways():
 
 
 def redact(gateways):
+    session = requests_retry_session()
     url = spreedly_endpoint("/v1/gateways/{}/redact.json")
     headers = {
         "Authorization": f"Basic {settings.AUTH_KEY}",
@@ -61,7 +63,7 @@ def redact(gateways):
     responses = []
     for gateway in gateways:
         try:
-            resp = requests.put(
+            resp = session.put(
                 url=url.format(gateway["token"]), headers=headers
             )
             responses.append(resp)
@@ -77,6 +79,7 @@ def redact(gateways):
 
 
 def notify(gateways, responses):
+    session = requests_retry_session()
     message_parts = []
     for gateway, response in zip(gateways, responses):
         url = spreedly_endpoint(
@@ -86,7 +89,7 @@ def notify(gateways, responses):
             "Authorization": f"Basic {settings.AUTH_KEY}",
             "Content-Type": "application/json",
         }
-        resp = requests.get(url=url, headers=headers, params={"order": "desc"})
+        resp = session.get(url=url, headers=headers, params={"order": "desc"})
 
         try:
             resp.raise_for_status()
@@ -119,7 +122,8 @@ def redact_and_notify(gateways):
 
 
 def check():
-    requests.get(settings.HEALTHCHECK_URL)
+    session = requests_retry_session()
+    session.get(settings.HEALTHCHECK_URL)
     non_redacted_gateways = [
         g for g in get_all_gateways() if not g["redacted"]
     ]
