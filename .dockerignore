@@ -1,0 +1,7 @@
+.dockerignore
+.git
+.gitignore
+.gitlab-ci.yml
+Dockerfile
+README.md
+tox.ini
