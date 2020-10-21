@@ -15,15 +15,11 @@ SPREEDLY_PAGE_SIZE = 20
 TOKEN_WHITELIST = ["D5lARug9NzuUfrFNkbeiWYSdHtx", "EK2Lv2jRNN2AVXjtso5V5fyv4lv"]
 
 
-def spreedly_endpoint(endpoint):
-    return f"{settings.SPREEDLY_BASE_URL}{endpoint}"
-
-
 def get_gateways(since_token=None):
     session = requests_retry_session()
-    url = spreedly_endpoint("/v1/gateways.json")
+    url = f"{settings.SPREEDLY_BASE_URL}/v1/gateways.json"
     headers = {
-        "Authorization": f"Basic {settings.AUTH_KEY}",
+        "Authorization": f"Basic {settings.SPREEDLY_AUTH}",
         "Content-Type": "application/json",
     }
     params = {"order": "desc"}
@@ -54,9 +50,8 @@ def get_all_gateways():
 
 def redact(gateways):
     session = requests_retry_session()
-    url = spreedly_endpoint("/v1/gateways/{}/redact.json")
     headers = {
-        "Authorization": f"Basic {settings.AUTH_KEY}",
+        "Authorization": f"Basic {settings.SPREEDLY_AUTH}",
         "Content-Type": "application/json",
     }
 
@@ -64,7 +59,8 @@ def redact(gateways):
     for gateway in gateways:
         try:
             resp = session.put(
-                url=url.format(gateway["token"]), headers=headers
+                url=f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/redact.json",
+                headers=headers
             )
             responses.append(resp)
             resp.raise_for_status()
@@ -82,11 +78,9 @@ def notify(gateways, responses):
     session = requests_retry_session()
     message_parts = []
     for gateway, response in zip(gateways, responses):
-        url = spreedly_endpoint(
-            f"/v1/gateways/{gateway['token']}/transactions.json"
-        )
+        url = f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/transactions.json"
         headers = {
-            "Authorization": f"Basic {settings.AUTH_KEY}",
+            "Authorization": f"Basic {settings.SPREEDLY_AUTH}",
             "Content-Type": "application/json",
         }
         resp = session.get(url=url, headers=headers, params={"order": "desc"})
