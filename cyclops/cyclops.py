@@ -34,9 +34,7 @@ def get_gateways(since_token=None):
 def get_all_gateways():
     gateways = get_gateways()
     while True:
-        if arrow.get(gateways[-1]["created_at"]) < arrow.now().shift(
-            days=-7
-        ):
+        if arrow.get(gateways[-1]["created_at"]) < arrow.now().shift(days=-7):
             break
 
         if len(gateways) != SPREEDLY_PAGE_SIZE:
@@ -59,18 +57,13 @@ def redact(gateways):
     for gateway in gateways:
         try:
             resp = session.put(
-                url=f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/redact.json",
-                headers=headers
+                url=f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/redact.json", headers=headers
             )
             responses.append(resp)
             resp.raise_for_status()
-            logging.info(
-                f"Requested to redact gateway {gateway['token']}. Response: {resp.json()}"
-            )
+            logging.info(f"Requested to redact gateway {gateway['token']}. Response: {resp.json()}")
         except Exception as e:
-            logging.error(
-                f"Failed to redact gateway {gateway['token']} with error: {e}"
-            )
+            logging.error(f"Failed to redact gateway {gateway['token']} with error: {e}")
     return responses
 
 
@@ -118,11 +111,7 @@ def redact_and_notify(gateways):
 def check():
     session = requests_retry_session()
     session.get(settings.HEALTHCHECK_URL)
-    non_redacted_gateways = [
-        g for g in get_all_gateways() if not g["redacted"]
-    ]
-    non_whitelisted_gateways = [
-        g for g in non_redacted_gateways if g["token"] not in TOKEN_WHITELIST
-    ]
+    non_redacted_gateways = [g for g in get_all_gateways() if not g["redacted"]]
+    non_whitelisted_gateways = [g for g in non_redacted_gateways if g["token"] not in TOKEN_WHITELIST]
     if non_whitelisted_gateways:
         redact_and_notify(non_whitelisted_gateways)

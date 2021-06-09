@@ -1,9 +1,9 @@
-FROM binkhq/python:3.8
+FROM binkhq/python:3.9
 
 WORKDIR /app
 ADD . .
 
-RUN pip install --no-cache-dir pipenv==2020.8.13 && \
+RUN pip install --no-cache-dir pipenv && \
     pipenv install --system --deploy --ignore-pipfile
 
 CMD ["python", "cyclops.py"]
