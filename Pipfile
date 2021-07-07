@@ -4,11 +4,14 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-black = "==21.4b1"
+black = "==21.6b0"
 flake8 = "*"
 pytest = "*"
 pytest-cov = "*"
 isort = "*"
+mypy = "*"
+ptpython = "*"
+xenon = "*"
 
 [packages]
 requests = "*"
