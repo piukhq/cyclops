@@ -1,41 +1,61 @@
 stages:
-  - tests
+  - test
   - build
   - deploy
 
-tests:
-  stage: tests
-  image: binkhq/python:3.9
-  script:
-    - pip install pipenv
+test:pytest: &test
+  stage: test
+  image: ghcr.io/binkhq/python:3.9
+  before_script:
     - pipenv install --dev --system --deploy --ignore-pipfile
+  script:
     - pytest cyclops/tests --cov=cyclops
 
-complexity:
-  stage: tests
-  image: binkhq/python:3.9
+test:complexity:
+  <<: *test
   script:
   - pip install xenon
   - xenon --max-average A --max-modules B --max-absolute B .
 
-flake8:
-  stage: tests
-  image: binkhq/python:3.9
+test:style:
+  <<: *test
   script:
-  - pip install flake8
   - flake8
+  - black --line-length=120 --check .
 
-build:
+build:master: &build
   stage: build
+  needs: ["test:pytest", "test:complexity", "test:style"]
   image: docker:latest
   services:
     - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - export CTAG=$(echo -n "$CI_PIPELINE_CREATED_AT" | sed s/\://g)
   script:
-    - export CTAG="master-$(date +%F-%H%M%S)"
-    - docker build --pull -t "$CI_REGISTRY/cyclops:master" -t "$CI_REGISTRY/cyclops:$CTAG" .
-    - docker push "$CI_REGISTRY/cyclops:master"
-    - docker push "$CI_REGISTRY/cyclops:$CTAG"
+    - docker build --pull --tag "$CI_REGISTRY/$CI_PROJECT_NAME:$CTAG" .
+    - docker push "$CI_REGISTRY/$CI_PROJECT_NAME:$CTAG"
+  only:
+    - master
+
+deploy:prod: &deploy
+  stage: deploy
+  needs: ["build:master"]
+  image: binkcore.azurecr.io/tagbot:latest
+  environment:
+    name: prod
+  before_script:
+    - export CTAG=$(echo -n "$CI_PIPELINE_CREATED_AT" | sed s/\://g)
+  script:
+    - tagbot
+      --username "$CI_REGISTRY_USER"
+      --password "$CI_REGISTRY_PASSWORD"
+      --source "$CI_REGISTRY/$CI_PROJECT_NAME:$CTAG"
+      --tag "$CI_ENVIRONMENT_NAME-$CTAG"
+    - tagbot
+      --username "$CI_REGISTRY_USER"
+      --password "$CI_REGISTRY_PASSWORD"
+      --source "$CI_REGISTRY/$CI_PROJECT_NAME:$CTAG"
+      --tag "$CI_ENVIRONMENT_NAME"
   only:
     - master
