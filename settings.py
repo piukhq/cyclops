@@ -31,7 +31,7 @@ SPREEDLY_BASE_URL = "https://core.spreedly.com"
 
 TEAMS_WEBHOOK = getenv(
     "TEAMS_WEBHOOK",
-    "https://outlook.office.com/webhook/bf220ac8-d509-474f-a568-148982784d19@a6e2367a-92ea-4e5a-b565-723830bcc095/IncomingWebhook/5931605317444706be22208c6f394f4c/48aca6b1-4d56-4a15-bc92-8aa9d97300df",  # noqa: E501
+    "https://hellobink.webhook.office.com/webhookb2/bf220ac8-d509-474f-a568-148982784d19@a6e2367a-92ea-4e5a-b565-723830bcc095/IncomingWebhook/5931605317444706be22208c6f394f4c/48aca6b1-4d56-4a15-bc92-8aa9d97300df",  # noqa: E501
 )
 
 XMATTERS_WEBHOOK = getenv(
