@@ -39,6 +39,16 @@ XMATTERS_WEBHOOK = getenv(
     "https://bink.xmatters.com/api/integration/1/functions/83fd7b90-28c5-4323-8ebb-a6010c976634/triggers?apiKey=78c63de7-1ab8-4cf0-80d3-745755fe30b2",  # noqa: E501
 )
 
+OPSGENIE_URL = getenv(
+    "OPSGENIE_UR:",
+    "https://api.opsgenie.com/v2/alerts"
+)
+
+OPSGENIE_API_KEY = getenv(
+    "OPSGENIE_API_KEY",
+    "b14bd75e-54ce-458e-88c4-5ab48e9d3d46"
+)
+
 sentry_sdk.init()
 
 HEALTHCHECK_URL = getenv("HEALTHCHECK_URL", "https://hchk.io/92429b19-1ea5-4f45-8abf-ee93c943ac39")

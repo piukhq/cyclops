@@ -1,4 +1,4 @@
-from settings import MAILGUN_API, MAILGUN_TARGET, MAILGUN_SENDER, MAILGUN_API_KEY, TEAMS_WEBHOOK, XMATTERS_WEBHOOK
+from settings import MAILGUN_API, MAILGUN_TARGET, MAILGUN_SENDER, MAILGUN_API_KEY, OPSGENIE_API_KEY, OPSGENIE_URL, TEAMS_WEBHOOK, XMATTERS_WEBHOOK
 from cyclops.requests_retry import requests_retry_session
 from requests.auth import HTTPBasicAuth
 import logging
@@ -53,7 +53,22 @@ def xmatters(message):
         pass
 
 
+def opsgenie(message):
+    try:
+        session = requests_retry_session()
+        session.post(
+            OPSGENIE_URL,
+            auth=HTTPBasicAuth('GenieKey', OPSGENIE_API_KEY),
+            data={
+                "message": message
+            }
+        )
+    except Exception:
+        logging.exception("Opsgenie Request Failed")
+        pass
+
 def alert(message):
     microsoft_teams(message)
     mailgun(message)
     xmatters(message)
+    opsgenie(message)
