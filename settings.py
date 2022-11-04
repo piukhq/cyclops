@@ -46,7 +46,7 @@ OPSGENIE_URL = getenv(
 
 OPSGENIE_API_KEY = getenv(
     "OPSGENIE_API_KEY",
-    "b14bd75e-54ce-458e-88c4-5ab48e9d3d46"
+    "GenieKey b14bd75e-54ce-458e-88c4-5ab48e9d3d46"
 )
 
 sentry_sdk.init()
