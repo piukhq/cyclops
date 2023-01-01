@@ -4,20 +4,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-black = "==21.9b0"
+black = "*"
 flake8 = "*"
 pytest = "*"
 pytest-cov = "*"
 isort = "*"
 mypy = "*"
-ptpython = "*"
 xenon = "*"
-regex = "<2021.10.8"
+responses = "*"
 
 [packages]
 requests = "*"
 arrow = "*"
-responses = "*"
 sentry-sdk = "*"
 azure-keyvault-secrets = "*"
 azure-identity = "*"

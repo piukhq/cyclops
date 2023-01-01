@@ -26,7 +26,7 @@ def get_gateways(since_token=None):
     if since_token:
         params["since_token"] = since_token
 
-    resp = session.get(url=url, headers=headers, params=params)
+    resp = session.get(url=url, headers=headers, params=params, timeout=60)
     resp.raise_for_status()
     return resp.json()["gateways"]
 
@@ -57,7 +57,9 @@ def redact(gateways):
     for gateway in gateways:
         try:
             resp = session.put(
-                url=f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/redact.json", headers=headers
+                url=f"{settings.SPREEDLY_BASE_URL}/v1/gateways/{gateway['token']}/redact.json",
+                headers=headers,
+                timeout=60,
             )
             responses.append(resp)
             resp.raise_for_status()
@@ -76,7 +78,7 @@ def notify(gateways, responses):
             "Authorization": f"Basic {settings.SPREEDLY_AUTH}",
             "Content-Type": "application/json",
         }
-        resp = session.get(url=url, headers=headers, params={"order": "desc"})
+        resp = session.get(url=url, headers=headers, params={"order": "desc"}, timeout=60)
 
         try:
             resp.raise_for_status()
@@ -110,7 +112,7 @@ def redact_and_notify(gateways):
 
 def check():
     session = requests_retry_session()
-    session.get(settings.HEALTHCHECK_URL)
+    session.get(settings.HEALTHCHECK_URL, timeout=5)
     non_redacted_gateways = [g for g in get_all_gateways() if not g["redacted"]]
     non_whitelisted_gateways = [g for g in non_redacted_gateways if g["token"] not in TOKEN_WHITELIST]
     if non_whitelisted_gateways:

@@ -20,7 +20,7 @@ def microsoft_teams(message):
                 }
             ],
         }
-        session.post(TEAMS_WEBHOOK, json=template)
+        session.post(TEAMS_WEBHOOK, json=template, timeout=10)
     except Exception:
         logging.exception("Microsoft Teams Request Failed")
         pass
@@ -38,6 +38,7 @@ def mailgun(message):
                 "subject": "Spreedly gateway BREACHED!",
                 "text": message,
             },
+            timeout=10,
         )
     except Exception:
         logging.exception("Mailgun Request Failed")

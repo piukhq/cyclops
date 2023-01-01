@@ -11,12 +11,30 @@ jobs:
     name: tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.11"
       - run: pip install pipenv
       - run: pipenv install --dev --system --deploy --ignore-pipfile
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: "."
+          security-checks: "vuln"
+          vuln-type: library
+          ignore-unfixed: true
+          exit-code: 0
+          severity: UNKNOWN,LOW,MEDIUM
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: "."
+          security-checks: "vuln"
+          vuln-type: library
+          ignore-unfixed: true
+          exit-code: 1
+          severity: HIGH,CRITICAL
       - run: pytest cyclops/tests --cov=cyclops
       - run: xenon --max-average A --max-modules B --max-absolute B .
       - run: flake8 .
@@ -27,17 +45,16 @@ jobs:
     needs: [ tests ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: echo "::set-output name=date::$(date +'%Y-%m-%dT%H%M%SZ')"
-        id: date
-      - uses: docker/login-action@v1
+      - uses: actions/checkout@v3
+      - run: echo "container_tag=$(date +'%FT%H%M%SZ')" >> $GITHUB_ENV
+      - uses: docker/login-action@v2
         with:
           registry: binkcore.azurecr.io
           username: binkcore
           password: ${{ secrets.ACR_BINKCORE_PASSWORD }}
-      - uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         with:
           push: true
           tags: |
-            binkcore.azurecr.io/cyclops:${{ steps.date.outputs.date }}
+            binkcore.azurecr.io/cyclops:${{ env.container_tag }}
             binkcore.azurecr.io/cyclops:latest
