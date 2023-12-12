@@ -41,4 +41,4 @@ XMATTERS_WEBHOOK = getenv(
 
 sentry_sdk.init()
 
-HEALTHCHECK_URL = getenv("HEALTHCHECK_URL", "https://hchk.io/92429b19-1ea5-4f45-8abf-ee93c943ac39")
+HEALTHCHECK_URL = getenv("HEALTHCHECK_URL", "https://ping.checklyhq.com/2b3ea388-58d5-439a-9310-dd01fefae469")
